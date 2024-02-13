@@ -1,0 +1,35 @@
+{
+	"Practice": {
+		"attempts": -1,
+		"MinLenght": 4
+	},
+	"Easy": {
+		"attempts": 10,
+		"MinLenght": 4,
+		"MaxLenght": 7
+	},
+	"Normal": {
+		"attempts": 7,
+		"MinLenght": 5,
+		"MaxLenght": 8
+	},
+	"Hard": {
+		"attempts": 5,
+		"MinLenght": 6,
+		"MaxLenght": 9
+	},
+	"Insane": {
+		"attempts": 4,
+		"MinLenght": 7,
+		"MaxLenght": 10
+	},
+	"Nightmare": {
+		"attempts": 3,
+		"MinLenght": 8,
+		"MaxLenght": 11
+	},
+	"Impossible": {
+		"attempts": 0,
+		"MinLenght": 10
+	}
+}

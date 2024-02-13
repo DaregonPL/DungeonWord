@@ -1,0 +1,7 @@
+{
+	"build": "content/build.data",
+	"words.rus": "words/rus.dict",
+	"words.sus": "words/sus.dict",
+	"rules": "content/rules.json",
+	"logo": "content/logo.txt"
+}
