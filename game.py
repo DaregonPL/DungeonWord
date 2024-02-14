@@ -1,6 +1,10 @@
-from random import randint
 import json
+from random import randint
 from os.path import exists
+from base64 import b64encode
+from utilities.Choice import Choice
+from utilities.PathManager import Paths
+from utilities.Help import Help
 
 '''
  ==  P R O J E C T   I N F O  ==
@@ -14,9 +18,10 @@ inDev = True
 
 class AVGame():
     """DungeonWord game class""" 
-    def __init__(self, paths):
+    def __init__(self, paths, PI):
         print('|==> GAME INIT <==|')
         self.FP = paths
+        self.PI = {'A': PI[0], 'N': PI[1], 'V': PI[2], 'B': PI[3]}
         with open(self.FP['rules']) as rulesfile:
             self.rules = json.load(rulesfile)
         with open(self.FP['logo']) as logofile:
@@ -27,39 +32,45 @@ class AVGame():
         self.menu()
 
     def menu(self):
+        self.seed = '-'.join([hex(ord(x))[2:] for x in
+                b64encode(str(randint(0, 100000)).encode()).decode()])
+        print(f'{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
+              f' ☢{game.seed}\n  by {self.PI["A"]}\n')
         print(f'\n\n{self.logo}\n')
-        diffC = Choice([x for x in self.rules], 'Choose the difficulty',
-                       cmd=['help', 'back'])
+        options = ['New Game', 'Exit']
+        title = 'Welcome to DungeonWord!'
+        self.menuC = Choice(options, title, cmd=['help'])  # "C" means Choice
+        self.menuC.display()
+        ans = self.menuC.answer()
+        if ans == 'New Game':
+            self.play()
+        else:
+            print(f'Unprogrammed function: {ans}')
 
-
-class Choice():
-    def __init__(self, options, heading, cmd=None):
-        self.binds, self.cmd = {}, cmd
-        for x in range(len(options)):
-            self.binds[x + 1] = options[x]
-        scopes = [f"\"{x}\"" for x in cmd]
+    def play(self):
+        with open(self.FP['rules']) as rulesfile:
+            self.rules = json.load(rulesfile)
         while 1:
-            print(f'\n┏━ {heading} ━┫▶')
-            [print(f'┃{n}. {val}') for n, val in self.binds.items()]
-            print('┃')
-            print(f'┣ {", ".join(scopes)} are available') if cmd else 0
-            self.ans = input('┗┫')
-            if self.ans in self.binds or self.ans in cmd \
-                    or self.ans in [y for x, y in self.binds.items()]:
+            self.diffC = Choice([x for x in self.rules],
+                                'Choose the difficulty',
+                                cmd=['help', 'home'], line='d')
+            self.diffC.display()
+            ans = self.diffC.answer()
+            if ans == 'help':
+                Help(self.rules, 'difficulty help')
+            elif ans == 'home':
+                self.menu()
                 break
+            else:
+                print(f'Unprogrammed function: {ans}')
+                
 
 
+#                                   ┏━━━ S T A R T I N G ━━━┓
 #                           = Getting and checking Paths =
-if exists('content/paths.json'):
-    with open('content/paths.json') as pathfile:
-        FPath = json.load(pathfile)
-else:
-    raise FileNotFoundError('\'content/paths.json\' is required for start')
-notfound = []
-for p in FPath:
-    notfound.append(f'"{FPath[p]}"') if not exists(FPath[p]) else 0
-if notfound:
-    raise FileNotFoundError(', '.join(notfound) + ' are required for start')
+paths = Paths('content/paths.json')
+paths.check()
+FPath = paths.get()
 
 #                           = Registering build =
 with open(FPath['build']) as bld:
@@ -67,7 +78,6 @@ with open(FPath['build']) as bld:
 if inDev:
     with open(FPath['build'], 'w') as bld:
         bld.write(str(BUILD))
-print(f'{NAME} v{VERSION}.{BUILD}\n  by {AUTHOR}')
 
-game = AVGame(FPath)
+game = AVGame(FPath, [AUTHOR, NAME, VERSION, BUILD])
 game.start()

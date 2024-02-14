@@ -3,5 +3,6 @@
 	"words.rus": "words/rus.dict",
 	"words.sus": "words/sus.dict",
 	"rules": "content/rules.json",
-	"logo": "content/logo.txt"
+	"logo": "content/logo.txt",
+	"dicts": "content/dictionaries.json"
 }
