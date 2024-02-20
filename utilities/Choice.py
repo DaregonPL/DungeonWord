@@ -10,7 +10,8 @@ class Choice():
                 command['arguments'] = [str(a) for a in x['args']]
                 self.hide.append(command)
             else:
-                raise TypeError(f'in hide[{hide.index(x)}] expected dict, not{type(x)}')
+                raise TypeError(f'in hide[{hide.index(x)}] ' +
+                                f'expected dict, not{type(x)}')
         for x in range(len(options)):
             self.binds[str(x + 1)] = options[x]
         self.scopes = [f"\"{x}\"" for x in cmd]
@@ -31,8 +32,8 @@ class Choice():
                 print(f'┣ Commands {", ".join(self.scopes)} are available')
             self.ans = input('┗┫')
             self.poss = self.cmd + \
-                        [x for x, y in self.binds.items()] + \
-                        [y for x, y in self.binds.items()]
+                [x for x, y in self.binds.items()] + \
+                [y for x, y in self.binds.items()]
             if self.ans in self.poss:
                 break
             elif self.checkCMD(self.ans):
@@ -49,8 +50,8 @@ class Choice():
                 print(f'╠ Commands {", ".join(self.scopes)} are available')
             self.ans = input('╚╣')
             self.poss = self.cmd + \
-                        [x for x, y in self.binds.items()] + \
-                        [y for x, y in self.binds.items()]
+                [x for x, y in self.binds.items()] + \
+                [y for x, y in self.binds.items()]
             if self.ans in self.poss:
                 break
 
@@ -70,7 +71,8 @@ class Choice():
         names = [x['command'] for x in self.hide]
         cmd = cmd.split(' ')
         if cmd[0] in names:
-            self.argsHide = [a['arguments'] for a in self.hide if a['command'] == cmd[0]][0]
+            self.argsHide = [a['arguments'] for a in self.hide
+                             if a['command'] == cmd[0]][0]
             cmdargs = cmd[1:]
             self.found = []
             values = {}

@@ -7,7 +7,9 @@ class Paths():
         """Meant to manage paths"""
         if exists(pathfile):
             with open(pathfile) as pfile:
-                self.paths = json.load(pfile)
+                self.pathsf = json.load(pfile)
+                self.paths = self.pathsf['pths']
+                self.confs = self.pathsf['cnf']
         else:
             raise FileNotFoundError(f'\'{pathfile}\' is required for start')
 
@@ -21,4 +23,4 @@ class Paths():
                                     ' are required for start')
 
     def get(self):
-        return self.paths
+        return [self.paths, self.confs]
