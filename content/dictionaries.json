@@ -1,4 +1,10 @@
 {
-	"Russian": "words/rus.dict",
-	"English": "words/eng.dict"
+	"Russian": {
+		"path": "words/rus.dict",
+		"range": [1072, 1104]
+	},
+	"English": {
+		"path": "words/eng.dict",
+		"range": [97, 123]
+	}
 }

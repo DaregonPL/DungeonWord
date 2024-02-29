@@ -30,6 +30,6 @@
 	},
 	"Impossible": {
 		"attempts": 4,
-		"MinLenght": 9
+		"MinLenght": 10
 	}
 }

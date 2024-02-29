@@ -1,8 +1,15 @@
 {
-	"build": "content/build.data",
-	"words.rus": "words/rus.dict",
-	"words.sus": "words/sus.dict",
-	"rules": "content/rules.json",
-	"logo": "content/logo.txt",
-	"dicts": "content/dictionaries.json"
+	"pths":{
+		"build": "content/build.data",
+		"words.rus": "words/rus.dict",
+		"words.sus": "words/sus.dict",
+		"rules": "content/rules.json",
+		"logo": "content/logo.txt",
+		"VLL": "content/VovLerLogo.txt",
+		"dicts": "content/dictionaries.json",
+		"settings": "content/settings.json"
+	},
+	"cnf": {
+		"inDev": true
+	}
 }

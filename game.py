@@ -1,10 +1,13 @@
 import json
+import os
+import platform
 from base64 import b64encode, b64decode
 from utilities.Choice import Choice
 from utilities.PathManager import Paths
 from utilities.cuts import choose_lang
 from utilities.WordDisplay import WordDisplay
 from utilities.random import randint
+from utilities.Help import Help
 
 '''
  ==  P R O J E C T   I N F O  ==
@@ -17,18 +20,30 @@ VERSION = '0.1'
 
 class AVGame():
     """DungeonWord game class"""
-    def __init__(self, paths, PI):
+    def __init__(self, paths, PI, startdata={}):
         print('|==> GAME INIT <==|')
+        self.USER = 'user'
+        if platform.system() == 'Windows':
+            filepathl = __file__.split('\\')
+            self.USER = filepathl[2]
+            print('Welcome, ' + filepathl[2])
+        self.sd = startdata
         self.FP = paths
+        self.inDev = self.sd['inDev'] if 'inDev' in self.sd else False
         self.PI = {'A': PI[0], 'N': PI[1], 'V': PI[2], 'B': PI[3]}
+        os.makedirs('content/progress', exist_ok=True)
         with open(self.FP['rules']) as rulesfile:
             self.rules = json.load(rulesfile)
         with open(self.FP['logo']) as logofile:
             self.logo = logofile.read()
+        with open(self.FP['VLL']) as logofile:
+            self.VLlogo = logofile.read()
         with open(self.FP['rules']) as rulesfile:
             self.rules = json.load(rulesfile)
         with open(self.FP['dicts']) as dictsfile:
             self.dicts = json.load(dictsfile)
+        with open(self.FP['settings']) as settsfile:
+            self.setts = json.load(settsfile)
         print('ready.')
 
     def start(self):
@@ -42,18 +57,18 @@ class AVGame():
                                         .encode()).decode()])
         dic = b64decode
         print(f'\n\n{self.logo}\n')
-        options = ['New Game', 'Exit']
+        options = ['Play', 'Exit']
         title = 'Welcome to DungeonWord!'
         self.menuC = Choice(options, title, cmd=['help'],
                             hide=[{'cmd': 'decrypt', 'args':
                                    ['seed', 'lang', 'diff']},
                                   {'cmd': 'get', 'args': ['word']},
-                                  {'cmd': 'set', 'args': ['seed']}])
+                                  {'cmd': 'set', 'args': ['thing']}])
         # "C" means Choice
         while 1:
             self.menuC.display()
             ans = self.menuC.answer()
-            if ans == 'New Game':
+            if ans == 'Play':
                 self.play()
                 break
             elif ans == 'Exit':
@@ -65,6 +80,7 @@ class AVGame():
                 print('\nRemake for classic game "Guess The Word"')
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
+                print(' '.join('\n Made by\n'.upper()) + self.VLlogo)
             elif type(ans) is dict and ans['cmd'] == 'decrypt':
                 if ans['args']['seed'][0] == '☢':
                     cutSeed = ans['args']['seed'][1:]
@@ -83,10 +99,28 @@ class AVGame():
                     else:
                         print('unregistered data')
             elif type(ans) is dict and ans['cmd'] == 'set':
-                self.seed = '-'.join([hex(ord(x))[2:] for x in
-                              b64encode(str(ans['args']['seed'])
-                                        .encode()).decode()])
-                print(f'Updated seed: ☢{self.seed}')
+                vals = ans['args']
+                if vals['thing'] == 'seed':
+                    if 'seed' in vals:
+                        self.seed = '-'.join([hex(ord(x))[2:] for x in
+                                      b64encode(str(ans['args']['seed'])
+                                                .encode()).decode()])
+                        print(f'Updated seed: ☢{self.seed}')
+                    else:
+                        print('seed expected, got', ', '.join([x for x in vals]))
+                elif vals['thing'] == 'symbol':
+                    symcon = Choice([x for x in self.setts['symbols']],
+                                    '-symbol.config.disp')
+                    symcon.display()
+                    ans = symcon.answer()
+                    smbl = input(ans + '.set:')
+                    print(chr(self.setts['symbols'][ans]), '->', smbl)
+                    self.setts['symbols'][ans] = ord(smbl)
+                    with open(self.FP['settings'], 'w') as settsfile:
+                        json.dump(self.setts, settsfile, indent=4)
+                    print('saved.')
+                else:
+                    print('Cannot access', vals['thing'])
             else:
                 print(f'Unprogrammed function: {ans}')
 
@@ -100,13 +134,12 @@ class AVGame():
         choose_lang(self)
 
     def begin(self):
-        global inDev
         print('Searching a word for you...')
         gameseed = int(b64decode(''.join([chr(int(x, 16))
                                           for x in game.seed.split('-')])
                                  .encode()).decode())
         self.Word = self.get_word(gameseed, self.diff, self.lang)
-        if inDev:
+        if self.inDev:
             print(f'Crits: {self.crits}')
             print(f'Fits: {len(self.goodwords)} / {len(self.words)}' +
                   f'({int(len(self.goodwords)/len(self.words)*100)}%)')
@@ -120,15 +153,60 @@ class AVGame():
 
     def guess(self, word):
         self.disp = WordDisplay(word.upper())
-        guessed, failed = 0, 0
-        while not guessed and not failed:
-            self.disp.print()
-            break
+        self.lifes = self.crits['attempts']
+        self.letts = []
+        err = ''
+        failed, att = 0, 0
+        while not self.disp.done() and not failed:
+            lfs = "♥" * (self.lifes - att) if self.lifes != -1 else "∞"
+            print('')
+            self.disp.print(frame='▣ ▍▎▏  ')
+            print(f'\n Lifes: {lfs}')
+            print(f' Mistakes: {att}')
+            print('██' + err.replace(' ', '██') + '██' if err else '')
+            print('=', ' '.join([x if x not in self.letts else
+                            ' ' for x in self.accepted]), '=')
+            ans = input('>>>')
+            if ans == '/q':
+                failed = True
+                continue
+            elif ans == '/used':
+                print('Used:', ' '.join(self.letts))
+                continue
+            elif ans == '/help':
+                Help({'/q': 'Quit', '/used': 'Used symbols'}, 'Game commands')
+                continue
+            # Unsort invalid
+            if len(ans) != 1:
+                err = 'one letter is expected'
+                continue
+            elif not (ans in self.accepted):
+                err = f'error 49300: use {self.lang} letters'
+                continue
+            elif ans in self.letts:
+                err = 'You\'ve already used this letter'
+                continue
+            else:
+                err = ''
+            # Checking
+            if not self.disp.show(ans.upper()):
+                att += 1
+            if not (ans in self.letts):
+                self.letts.append(ans)
+                self.letts.sort()
+            if att == self.lifes:
+                failed = True
+        print('')
+        self.disp.reveal()
+        self.disp.print(frame='│║◈║│ ')
+            
 
     def get_word(self, seed, diff, lang):
-        with open(self.dicts[lang], encoding='utf-8') as langfile:
+        with open(self.dicts[lang]['path'], encoding='utf-8') as langfile:
             self.words = langfile.read().split('\n')
         self.crits = self.rules[diff]
+        self.accepted = [chr(x) for x in range(self.dicts[lang]['range'][0],
+                                               self.dicts[lang]['range'][1])]
         self.minLen = self.crits['MinLenght'] if 'MinLenght' in \
             self.crits else 0
         self.maxLen = self.crits['MaxLenght'] if 'MaxLenght' in \
@@ -145,14 +223,13 @@ class AVGame():
 paths = Paths('content/paths.json')
 paths.check()
 FPath, confs = paths.get()
-inDev = confs['inDev']
 
 #                           = Registering build =
 with open(FPath['build']) as bld:
     BUILD = int(bld.read()) + 1
-if inDev:
+if confs['inDev']:
     with open(FPath['build'], 'w') as bld:
         bld.write(str(BUILD))
 
-game = AVGame(FPath, [AUTHOR, NAME, VERSION, BUILD])
+game = AVGame(FPath, [AUTHOR, NAME, VERSION, BUILD], confs)
 game.start()

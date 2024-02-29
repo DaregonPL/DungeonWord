@@ -79,18 +79,22 @@ class Choice():
             errors = []
             for a in cmdargs:
                 now = a.split(':')
-                if now[0] in self.found:
+                if not ':' in a:
+                    error = f'{a}: expecting value'
+                    errors.append(error) if error not in errors else 0
+                    break
+                elif now[0] in self.found:
                     error = 'multiple arguments in one command'
                     errors.append(error) if error not in errors else 0
                 elif not now[1]:
                     error = 'expecting value'
                     errors.append(error) if error not in errors else 0
-                elif now[0] in self.argsHide and now[1]:
+                elif now[0] and now[1]:
                     self.found.append(now[0])
                     values[now[0]] = now[1]
             self.hideans = {'cmd': cmd[0], 'args': values}
             [print(x) for x in errors] if errors else 0
-            if len(self.found) == len(self.argsHide):
+            if len(self.found) >= len(self.argsHide):
                 return True
             else:
                 return False
