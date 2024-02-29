@@ -36,6 +36,10 @@ class AVGame():
             self.rules = json.load(rulesfile)
         with open(self.FP['logo']) as logofile:
             self.logo = logofile.read()
+        with open(self.FP['fail']) as logofile:
+            self.FailI = logofile.read()
+        with open(self.FP['win']) as logofile:
+            self.WinI = logofile.read()
         with open(self.FP['VLL']) as logofile:
             self.VLlogo = logofile.read()
         with open(self.FP['rules']) as rulesfile:
@@ -158,12 +162,13 @@ class AVGame():
         err = ''
         failed, att = 0, 0
         while not self.disp.done() and not failed:
-            lfs = "♥" * (self.lifes - att) if self.lifes != -1 else "∞"
+            lfs = ' '.join("♥" * (self.lifes - att) + "♡" * att) \
+                  if self.lifes != -1 else "∞"
             print('')
             self.disp.print(frame='▣ ▍▎▏  ')
             print(f'\n Lifes: {lfs}')
             print(f' Mistakes: {att}')
-            print('██' + err.replace(' ', '██') + '██' if err else '')
+            print(err)
             print('=', ' '.join([x if x not in self.letts else
                             ' ' for x in self.accepted]), '=')
             ans = input('>>>')
@@ -196,6 +201,10 @@ class AVGame():
                 self.letts.sort()
             if att == self.lifes:
                 failed = True
+        if not failed:
+            print(self.WinI)
+        else:
+            print(self.FailI)
         print('')
         self.disp.reveal()
         self.disp.print(frame='│║◈║│ ')
