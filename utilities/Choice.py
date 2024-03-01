@@ -39,6 +39,8 @@ class Choice():
             elif self.checkCMD(self.ans):
                 self.hidecheck = 1
                 break
+            elif self.ans == 'sys cmd':
+                [print(x) for x in self.hide]
 
     def out_doub(self):
         """Prints choice in double frame"""

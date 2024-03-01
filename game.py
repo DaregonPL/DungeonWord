@@ -42,8 +42,6 @@ class AVGame():
             self.WinI = logofile.read()
         with open(self.FP['VLL']) as logofile:
             self.VLlogo = logofile.read()
-        with open(self.FP['rules']) as rulesfile:
-            self.rules = json.load(rulesfile)
         with open(self.FP['dicts']) as dictsfile:
             self.dicts = json.load(dictsfile)
         with open(self.FP['settings']) as settsfile:
@@ -67,7 +65,7 @@ class AVGame():
                             hide=[{'cmd': 'decrypt', 'args':
                                    ['seed', 'lang', 'diff']},
                                   {'cmd': 'get', 'args': ['word']},
-                                  {'cmd': 'set', 'args': ['thing']}])
+                                  {'cmd': 'cfg', 'args': ['param']}])
         # "C" means Choice
         while 1:
             self.menuC.display()
@@ -102,9 +100,9 @@ class AVGame():
                         print('W:' + self.get_word(code, diff, lang))
                     else:
                         print('unregistered data')
-            elif type(ans) is dict and ans['cmd'] == 'set':
+            elif type(ans) is dict and ans['cmd'] == 'cfg':
                 vals = ans['args']
-                if vals['thing'] == 'seed':
+                if vals['param'] == 'seed':
                     if 'seed' in vals:
                         self.seed = '-'.join([hex(ord(x))[2:] for x in
                                       b64encode(str(ans['args']['seed'])
@@ -112,7 +110,7 @@ class AVGame():
                         print(f'Updated seed: ☢{self.seed}')
                     else:
                         print('seed expected, got', ', '.join([x for x in vals]))
-                elif vals['thing'] == 'symbol':
+                elif vals['param'] == 'symbol':
                     symcon = Choice([x for x in self.setts['symbols']],
                                     '-symbol.config.disp')
                     symcon.display()
@@ -124,7 +122,7 @@ class AVGame():
                         json.dump(self.setts, settsfile, indent=4)
                     print('saved.')
                 else:
-                    print('Cannot access', vals['thing'])
+                    print('Cannot access', vals['param'])
             else:
                 print(f'Unprogrammed function: {ans}')
 
@@ -167,11 +165,11 @@ class AVGame():
             print('')
             self.disp.print(frame='▣ ▍▎▏  ')
             print(f'\n Lifes: {lfs}')
-            print(f' Mistakes: {att}')
-            print(err)
+            print(f' Mistakes: {att}\n')
+            print(f'Message: {err}')
             print('=', ' '.join([x if x not in self.letts else
                             ' ' for x in self.accepted]), '=')
-            ans = input('>>>')
+            ans = input('>>>').lower()
             if ans == '/q':
                 failed = True
                 continue

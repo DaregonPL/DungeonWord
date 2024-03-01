@@ -12,6 +12,6 @@
 		"win": "content/DigitalIcon/Win.digitalicon"
 	},
 	"cnf": {
-		"inDev": true
+		"inDev": false
 	}
 }
