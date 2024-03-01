@@ -46,6 +46,8 @@ class AVGame():
             self.dicts = json.load(dictsfile)
         with open(self.FP['settings']) as settsfile:
             self.setts = json.load(settsfile)
+            print(self.setts)
+            self.settingdict = self.setts['options']
         print('ready.')
 
     def start(self):
@@ -102,14 +104,17 @@ class AVGame():
                         print('unregistered data')
             elif type(ans) is dict and ans['cmd'] == 'cfg':
                 vals = ans['args']
-                if vals['param'] == 'seed':
+                if vals['param'] == '*':
+                    print(['seed', 'symdol'] + [x for x in self.settingdict])
+                elif vals['param'] == 'seed':
                     if 'seed' in vals:
                         self.seed = '-'.join([hex(ord(x))[2:] for x in
                                       b64encode(str(ans['args']['seed'])
                                                 .encode()).decode()])
                         print(f'Updated seed: ☢{self.seed}')
                     else:
-                        print('seed expected, got', ', '.join([x for x in vals]))
+                        print('seed expected, got', ', '.join
+                              ([x for x in vals]))
                 elif vals['param'] == 'symbol':
                     symcon = Choice([x for x in self.setts['symbols']],
                                     '-symbol.config.disp')
@@ -121,6 +126,21 @@ class AVGame():
                     with open(self.FP['settings'], 'w') as settsfile:
                         json.dump(self.setts, settsfile, indent=4)
                     print('saved.')
+                elif vals['param'] in self.settingdict:
+                    if 'value' in vals:
+                        if vals['value'] in ['1', '0', 'false', 'true']:
+                            value = True if vals['value'] in ['1', 'true'] \
+                                    else False
+                            print(vals['param'] + ':', value)
+                            self.settingdict[vals['param']] = vals['value']
+                            self.setts['options'] = self.settingdict
+                            with open(self.FP['settings'], 'w') as settsfile:
+                                json.dump(self.setts, settsfile, indent=4)
+                        else:
+                            print('value must be int or bool')
+                    else:
+                        print('value expected, got', ', '.join
+                              ([x for x in vals]))
                 else:
                     print('Cannot access', vals['param'])
             else:
@@ -160,8 +180,11 @@ class AVGame():
         err = ''
         failed, att = 0, 0
         while not self.disp.done() and not failed:
-            lfs = ' '.join("♥" * (self.lifes - att) + "♡" * att) \
-                  if self.lifes != -1 else "∞"
+            if self.settingdict['heartsDisplay']:
+                lfs = ' '.join("♥" * (self.lifes - att) + "♡" * att) \
+                      if self.lifes != -1 else "∞"
+            else:
+                lfs = self.lifes - att if self.lifes != -1 else "∞"
             print('')
             self.disp.print(frame='▣ ▍▎▏  ')
             print(f'\n Lifes: {lfs}')

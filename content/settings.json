@@ -2,5 +2,8 @@
     "symbols": {
         "heart": 9829,
         "seed": 9762
+    },
+    "options": {
+    	"heartsDisplay": true
     }
 }

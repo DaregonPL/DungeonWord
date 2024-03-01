@@ -96,7 +96,9 @@ class Choice():
                     values[now[0]] = now[1]
             self.hideans = {'cmd': cmd[0], 'args': values}
             [print(x) for x in errors] if errors else 0
-            if len(self.found) >= len(self.argsHide):
+            checkdel = self.argsHide.copy()
+            [checkdel.remove(x) for x in self.found if x in checkdel]
+            if not checkdel:
                 return True
             else:
                 return False
