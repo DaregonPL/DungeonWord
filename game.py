@@ -82,7 +82,7 @@ class AVGame():
             if ans == 'Play':
                 self.play()
                 break
-            elif ans == 'Exit':
+            elif ans == 'Save & Exit':
                 with open(f'content/progress/{self.USER}.user', 'w') as usrf:
                     json.dump(self.userdata, usrf, indent=4)
                 print(f'Saved to {self.USER}.user')
