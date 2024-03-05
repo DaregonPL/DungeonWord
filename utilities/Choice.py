@@ -56,6 +56,11 @@ class Choice():
                 [y for x, y in self.binds.items()]
             if self.ans in self.poss:
                 break
+            elif self.checkCMD(self.ans):
+                self.hidecheck = 1
+                break
+            elif self.ans == 'sys cmd':
+                [print(x) for x in self.hide]
 
     def answer(self):
         if self.ans in [y for x, y in self.binds.items()]:

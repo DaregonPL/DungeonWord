@@ -27,6 +27,8 @@ class AVGame():
             filepathl = __file__.split('\\')
             self.USER = filepathl[2]
             print('Welcome, ' + filepathl[2])
+        else:
+            raise TypeError('Windows is required')
         self.sd = startdata
         self.FP = paths
         self.inDev = self.sd['inDev'] if 'inDev' in self.sd else False
@@ -46,13 +48,17 @@ class AVGame():
             self.dicts = json.load(dictsfile)
         with open(self.FP['settings']) as settsfile:
             self.setts = json.load(settsfile)
-            print(self.setts)
             self.settingdict = self.setts['options']
         print('ready.')
 
     def start(self):
         print(f'{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
               f'\n  by {self.PI["A"]}\n')
+        if not os.path.exists(f'content/progress/{self.USER}.user'):
+            with open(f'content/progress/{self.USER}.user', 'w') as userfile:
+                json.dump({'user': self.USER, 'score': 0}, userfile)
+        with open(f'content/progress/{self.USER}.user') as usrf:
+            self.userdata = json.load(usrf)
         self.menu()
 
     def menu(self):
@@ -61,7 +67,8 @@ class AVGame():
                                         .encode()).decode()])
         dic = b64decode
         print(f'\n\n{self.logo}\n')
-        options = ['Play', 'Exit']
+        print(f'User:{self.userdata["user"]}  Score:{self.userdata["score"]}')
+        options = ['Play', 'Reset', 'Save & Exit']
         title = 'Welcome to DungeonWord!'
         self.menuC = Choice(options, title, cmd=['help'],
                             hide=[{'cmd': 'decrypt', 'args':
@@ -76,7 +83,14 @@ class AVGame():
                 self.play()
                 break
             elif ans == 'Exit':
-                print('Saved to !NOFILEFOUND')
+                with open(f'content/progress/{self.USER}.user', 'w') as usrf:
+                    json.dump(self.userdata, usrf, indent=4)
+                print(f'Saved to {self.USER}.user')
+                break
+            elif ans == 'Reset':
+                if os.path.exists(f'content/progress/{self.USER}.user'):
+                    os.remove(f'content/progress/{self.USER}.user')
+                    print('SaveData file removed')
                 break
             elif ans == 'help':
                 print(f'\n{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
@@ -85,6 +99,7 @@ class AVGame():
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
                 print(' '.join('\n Made by\n'.upper()) + self.VLlogo)
+            
             elif type(ans) is dict and ans['cmd'] == 'decrypt':
                 if ans['args']['seed'][0] == '☢':
                     cutSeed = ans['args']['seed'][1:]
@@ -189,6 +204,7 @@ class AVGame():
             self.disp.print(frame='▣ ▍▎▏  ')
             print(f'\n Lifes: {lfs}')
             print(f' Mistakes: {att}\n')
+            print('/help - list of commands')
             print(f'Message: {err}')
             print('=', ' '.join([x if x not in self.letts else
                             ' ' for x in self.accepted]), '=')
@@ -200,7 +216,9 @@ class AVGame():
                 print('Used:', ' '.join(self.letts))
                 continue
             elif ans == '/help':
-                Help({'/q': 'Quit', '/used': 'Used symbols'}, 'Game commands')
+                cmd = {'/q': 'Quit', '/used': 'Used symbols', '/help': 'Commands'}
+                print('    Game Commands:')
+                [print(f'{x}: \t{y}') for x, y in cmd.items()]
                 continue
             # Unsort invalid
             if len(ans) != 1:
@@ -210,7 +228,7 @@ class AVGame():
                 err = f'error 49300: use {self.lang} letters'
                 continue
             elif ans in self.letts:
-                err = 'You\'ve already used this letter'
+                err = f'You\'ve already used this letter ({ans})'
                 continue
             else:
                 err = ''
@@ -229,7 +247,8 @@ class AVGame():
         print('')
         self.disp.reveal()
         self.disp.print(frame='│║◈║│ ')
-            
+        self.userdata['score'] += self.crits['reward']
+        print(f'Attempts: {len(self.letts)}, Score: {self.crits["reward"]}')
 
     def get_word(self, seed, diff, lang):
         with open(self.dicts[lang]['path'], encoding='utf-8') as langfile:
