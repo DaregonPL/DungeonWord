@@ -2,7 +2,8 @@
 	"pths":{
 		"build": "content/build.data",
 		"words.rus": "words/rus.dict",
-		"words.sus": "words/sus.dict",
+		"words.eng": "words/eng.dict",
+		"words.8v": "words/8v.dict",
 		"rules": "content/rules.json",
 		"logo": "content/DigitalIcon/newlogo.digitalicon",
 		"VLL": "content/DigitalIcon/VovLerLogo.digitalicon",
@@ -12,6 +13,6 @@
 		"win": "content/DigitalIcon/Win.digitalicon"
 	},
 	"cnf": {
-		"inDev": true
+		"inDev": false
 	}
 }

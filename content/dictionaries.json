@@ -6,5 +6,9 @@
 	"English": {
 		"path": "words/eng.dict",
 		"range": [97, 123]
+	},
+	"8V_Members": {
+		"path": "words/8v.dict",
+		"range": [1072, 1104]
 	}
 }

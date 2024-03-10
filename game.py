@@ -62,6 +62,7 @@ class AVGame():
         self.menu()
 
     def menu(self):
+        #  Menu
         self.seed = '-'.join([hex(ord(x))[2:] for x in
                               b64encode(str(randint(0, 100000))
                                         .encode()).decode()])
@@ -70,13 +71,13 @@ class AVGame():
         print(f'User:{self.userdata["user"]}  Score:{self.userdata["score"]}')
         options = ['Play', 'Reset', 'Save & Exit']
         title = 'Welcome to DungeonWord!'
-        self.menuC = Choice(options, title, cmd=['help'],
+        self.menuC = Choice(options, title, cmd=['help'],  # makin' main choice
                             hide=[{'cmd': 'decrypt', 'args':
                                    ['seed', 'lang', 'diff']},
                                   {'cmd': 'get', 'args': ['word']},
                                   {'cmd': 'cfg', 'args': ['param']}])
         # "C" means Choice
-        while 1:
+        while 1:  # Main Cycle
             self.menuC.display()
             ans = self.menuC.answer()
             if ans == 'Play':
@@ -95,6 +96,7 @@ class AVGame():
             elif ans == 'help':
                 print(f'\n{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
                       f'   ☢{game.seed}\n  by {self.PI["A"]}')
+                print('Vladimir Rozhok')
                 print('\nRemake for classic game "Guess The Word"')
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
@@ -162,6 +164,7 @@ class AVGame():
                 print(f'Unprogrammed function: {ans}')
 
     def play(self):
+        #  starting game
         self.langC = Choice([x for x in self.dicts],
                             'Choose language',
                             cmd=['home'], line='d')
@@ -171,6 +174,7 @@ class AVGame():
         choose_lang(self)
 
     def begin(self):
+        # getting word
         print('Searching a word for you...')
         gameseed = int(b64decode(''.join([chr(int(x, 16))
                                           for x in game.seed.split('-')])
@@ -189,6 +193,7 @@ class AVGame():
         self.menu()
 
     def guess(self, word):
+        #  == guessing word ==
         self.disp = WordDisplay(word.upper())
         self.lifes = self.crits['attempts']
         self.letts = []
@@ -251,6 +256,7 @@ class AVGame():
         print(f'Attempts: {len(self.letts)}, Score: {self.crits["reward"]}')
 
     def get_word(self, seed, diff, lang):
+        #  == Utilite for getting word ==
         with open(self.dicts[lang]['path'], encoding='utf-8') as langfile:
             self.words = langfile.read().split('\n')
         self.crits = self.rules[diff]
