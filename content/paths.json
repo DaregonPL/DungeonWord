@@ -1,18 +1,19 @@
 {
-	"pths":{
-		"build": "content/build.data",
-		"words.rus": "words/rus.dict",
-		"words.eng": "words/eng.dict",
-		"words.8v": "words/8v.dict",
-		"rules": "content/rules.json",
-		"logo": "content/DigitalIcon/newlogo.digitalicon",
-		"VLL": "content/DigitalIcon/VovLerLogo.digitalicon",
-		"dicts": "content/dictionaries.json",
-		"settings": "content/settings.json",
-		"fail": "content/DigitalIcon/Failed.digitalicon",
-		"win": "content/DigitalIcon/Win.digitalicon"
-	},
-	"cnf": {
-		"inDev": false
-	}
+    "pths": {
+        "build": "content/build.data",
+        "words.rus": "words/russian.dict",
+        "words.eng": "words/english.dict",
+        "words.8v": "words/8v_members.dict",
+        "rules": "content/rules.json",
+        "dicts": "content/dictionaries.json",
+        "patch": "content/patch.json",
+        "settings": "content/settings.json",
+        "logo": "content/DigitalIcon/newlogo.digitalicon",
+        "VLL": "content/DigitalIcon/VovLerLogo.digitalicon",
+        "fail": "content/DigitalIcon/Failed.digitalicon",
+        "win": "content/DigitalIcon/Win.digitalicon"
+    },
+    "cnf": {
+        "inDev": true
+    }
 }

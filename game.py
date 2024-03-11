@@ -15,7 +15,7 @@ from utilities.Help import Help
 
 AUTHOR = 'VovLer Games (DaregonPL)'
 NAME = 'DungeonWord'
-VERSION = '0.1'
+VERSION = '1.0'
 
 
 class AVGame():
@@ -46,6 +46,12 @@ class AVGame():
             self.VLlogo = logofile.read()
         with open(self.FP['dicts']) as dictsfile:
             self.dicts = json.load(dictsfile)
+        with open(self.FP['patch']) as patchfile:
+            self.allpatch = json.load(patchfile)
+            print(self.allpatch)
+            self.enpatch = [x for x, y in self.allpatch.items() if y['enabled']]
+            for x in self.enpatch:
+                self.dicts[x] = self.allpatch[x]
         with open(self.FP['settings']) as settsfile:
             self.setts = json.load(settsfile)
             self.settingdict = self.setts['options']
@@ -75,7 +81,8 @@ class AVGame():
                             hide=[{'cmd': 'decrypt', 'args':
                                    ['seed', 'lang', 'diff']},
                                   {'cmd': 'get', 'args': ['word']},
-                                  {'cmd': 'cfg', 'args': ['param']}])
+                                  {'cmd': 'cfg', 'args': ['param']},
+                                  {'cmd': 'patch', 'args': []}])
         # "C" means Choice
         while 1:  # Main Cycle
             self.menuC.display()
@@ -96,7 +103,7 @@ class AVGame():
             elif ans == 'help':
                 print(f'\n{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
                       f'   ☢{game.seed}\n  by {self.PI["A"]}')
-                print('Vladimir Rozhok')
+                print('\t(=Vladimir Rozhok=)\nChoice commands: sys cmd')
                 print('\nRemake for classic game "Guess The Word"')
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
@@ -119,10 +126,47 @@ class AVGame():
                         print('W:' + self.get_word(code, diff, lang))
                     else:
                         print('unregistered data')
+            elif type(ans) is dict and ans['cmd'] == 'patch':
+                print('-patch control')
+                binds = {}
+                patchs = [x for x in self.allpatch]
+                for x in range(len(patchs)):
+                    print(f'{x}. {patchs[x]}  enabled:{self.allpatch[patchs[x]]["enabled"]}')
+                    binds[x] = patchs[x]
+                num = input('number:')
+                if not num.isdigit() and num != '*':
+                    print('int or * expected')
+                elif num.isdigit() and int(num) in binds:
+                    num = int(num)
+                    enb = self.allpatch[binds[num]]["enabled"]
+                    value = True if not enb else False
+                    self.allpatch[binds[num]]["enabled"] = value
+                    with open(self.FP['patch'], 'w') as patchfile:
+                        json.dump(self.allpatch, patchfile, indent=4)
+                    endis = 'enabled' if value else 'disabled'
+                    print(binds[num], endis)
+                    print('restart the program')
+                    break
+                elif num == '*':
+                    status = input('status(0/1):')
+                    if status == '1':
+                        for x in self.allpatch:
+                            self.allpatch[x]['enabled'] = True
+                        with open(self.FP['patch'], 'w') as patchfile:
+                            json.dump(self.allpatch, patchfile, indent=4)
+                        print('all enabled')
+                        break
+                    elif status == '0':
+                        for x in self.allpatch:
+                            self.allpatch[x]['enabled'] = False
+                        with open(self.FP['patch'], 'w') as patchfile:
+                            json.dump(self.allpatch, patchfile, indent=4)
+                        print('all disabled')
+                        break
             elif type(ans) is dict and ans['cmd'] == 'cfg':
                 vals = ans['args']
                 if vals['param'] == '*':
-                    print(['seed', 'symdol'] + [x for x in self.settingdict])
+                    print(['seed', 'symbol', 'sys.indev'] + [f'{x}: {y}' for x, y in self.settingdict.items()])
                 elif vals['param'] == 'seed':
                     if 'seed' in vals:
                         self.seed = '-'.join([hex(ord(x))[2:] for x in
@@ -143,14 +187,31 @@ class AVGame():
                     with open(self.FP['settings'], 'w') as settsfile:
                         json.dump(self.setts, settsfile, indent=4)
                     print('saved.')
+                elif vals['param'] == 'sys.indev':
+                    value = True if not self.inDev else False
+                    if 'value' in vals:
+                        if vals['value'] in ['1', '0', 'false', 'true']:
+                            value = True if vals['value'] in ['1', 'true'] \
+                                    else False
+                    print(vals['param'] + ':', value)
+                    with open('content/paths.json') as jj:
+                        a = json.load(jj)
+                    a['cnf']['inDev'] = value
+                    with open('content/paths.json', 'w') as jj:
+                        json.dump(a, jj, indent=4)
+                    with open(f'content/progress/{self.USER}.user', 'w') as usrf:
+                        json.dump(self.userdata, usrf, indent=4)
+                    print(f'Saved to {self.USER}.user\nrestart the game')
+                    break
                 elif vals['param'] in self.settingdict:
                     if 'value' in vals:
                         if vals['value'] in ['1', '0', 'false', 'true']:
                             value = True if vals['value'] in ['1', 'true'] \
                                     else False
                             print(vals['param'] + ':', value)
-                            self.settingdict[vals['param']] = vals['value']
+                            self.settingdict[vals['param']] = value
                             self.setts['options'] = self.settingdict
+                            print('setts:', self.settingdict)
                             with open(self.FP['settings'], 'w') as settsfile:
                                 json.dump(self.setts, settsfile, indent=4)
                         else:
@@ -282,7 +343,7 @@ FPath, confs = paths.get()
 #                           = Registering build =
 with open(FPath['build']) as bld:
     BUILD = int(bld.read()) + 1
-if confs['inDev']:
+if confs['inDev'] or 1:
     with open(FPath['build'], 'w') as bld:
         bld.write(str(BUILD))
 

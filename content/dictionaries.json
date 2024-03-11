@@ -1,14 +1,10 @@
 {
 	"Russian": {
-		"path": "words/rus.dict",
+		"path": "words/russian.dict",
 		"range": [1072, 1104]
 	},
 	"English": {
-		"path": "words/eng.dict",
+		"path": "words/english.dict",
 		"range": [97, 123]
-	},
-	"8V_Members": {
-		"path": "words/8v.dict",
-		"range": [1072, 1104]
 	}
 }

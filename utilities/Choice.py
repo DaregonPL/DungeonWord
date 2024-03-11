@@ -40,7 +40,9 @@ class Choice():
                 self.hidecheck = 1
                 break
             elif self.ans == 'sys cmd':
+                print('[')
                 [print(x) for x in self.hide]
+                print(']')
 
     def out_doub(self):
         """Prints choice in double frame"""
@@ -60,7 +62,9 @@ class Choice():
                 self.hidecheck = 1
                 break
             elif self.ans == 'sys cmd':
+                print('[')
                 [print(x) for x in self.hide]
+                print(']')
 
     def answer(self):
         if self.ans in [y for x, y in self.binds.items()]:
