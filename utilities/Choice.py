@@ -90,7 +90,7 @@ class Choice():
             errors = []
             for a in cmdargs:
                 now = a.split(':')
-                if not ':' in a:
+                if not (':' in a):
                     error = f'{a}: expecting value'
                     errors.append(error) if error not in errors else 0
                     break

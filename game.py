@@ -7,7 +7,6 @@ from utilities.PathManager import Paths
 from utilities.cuts import choose_lang
 from utilities.WordDisplay import WordDisplay
 from utilities.random import randint
-from utilities.Help import Help
 
 '''
  ==  P R O J E C T   I N F O  ==
@@ -49,7 +48,8 @@ class AVGame():
         with open(self.FP['patch']) as patchfile:
             self.allpatch = json.load(patchfile)
             print(self.allpatch)
-            self.enpatch = [x for x, y in self.allpatch.items() if y['enabled']]
+            self.enpatch = [x for x, y in self.allpatch.items()
+                            if y['enabled']]
             for x in self.enpatch:
                 self.dicts[x] = self.allpatch[x]
         with open(self.FP['settings']) as settsfile:
@@ -108,7 +108,6 @@ class AVGame():
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
                 print(' '.join('\n Made by\n'.upper()) + self.VLlogo)
-            
             elif type(ans) is dict and ans['cmd'] == 'decrypt':
                 if ans['args']['seed'][0] == '☢':
                     cutSeed = ans['args']['seed'][1:]
@@ -131,7 +130,8 @@ class AVGame():
                 binds = {}
                 patchs = [x for x in self.allpatch]
                 for x in range(len(patchs)):
-                    print(f'{x}. {patchs[x]}  enabled:{self.allpatch[patchs[x]]["enabled"]}')
+                    print(f'{x}. {patchs[x]}\t' +
+                          'enabled:{self.allpatch[patchs[x]]["enabled"]}')
                     binds[x] = patchs[x]
                 num = input('number:')
                 if not num.isdigit() and num != '*':
@@ -166,12 +166,13 @@ class AVGame():
             elif type(ans) is dict and ans['cmd'] == 'cfg':
                 vals = ans['args']
                 if vals['param'] == '*':
-                    print(['seed', 'symbol', 'sys.indev'] + [f'{x}: {y}' for x, y in self.settingdict.items()])
+                    print(['seed', 'symbol', 'sys.indev'] +
+                          [f'{x}: {y}' for x, y in self.settingdict.items()])
                 elif vals['param'] == 'seed':
                     if 'seed' in vals:
-                        self.seed = '-'.join([hex(ord(x))[2:] for x in
-                                      b64encode(str(ans['args']['seed'])
-                                                .encode()).decode()])
+                        pf = b64encode(str(ans['args']['seed'])
+                                       .encode()).decode()
+                        self.seed = '-'.join([hex(ord(x))[2:] for x in pf])
                         print(f'Updated seed: ☢{self.seed}')
                     else:
                         print('seed expected, got', ', '.join
@@ -199,7 +200,8 @@ class AVGame():
                     a['cnf']['inDev'] = value
                     with open('content/paths.json', 'w') as jj:
                         json.dump(a, jj, indent=4)
-                    with open(f'content/progress/{self.USER}.user', 'w') as usrf:
+                    with open(f'content/progress/{self.USER}.user', 'w') \
+                         as usrf:
                         json.dump(self.userdata, usrf, indent=4)
                     print(f'Saved to {self.USER}.user\nrestart the game')
                     break
@@ -273,7 +275,7 @@ class AVGame():
             print('/help - list of commands')
             print(f'Message: {err}')
             print('=', ' '.join([x if x not in self.letts else
-                            ' ' for x in self.accepted]), '=')
+                                 ' ' for x in self.accepted]), '=')
             ans = input('>>>').lower()
             if ans == '/q':
                 failed = True
@@ -282,7 +284,8 @@ class AVGame():
                 print('Used:', ' '.join(self.letts))
                 continue
             elif ans == '/help':
-                cmd = {'/q': 'Quit', '/used': 'Used symbols', '/help': 'Commands'}
+                cmd = {'/q': 'Quit', '/used': 'Used symbols',
+                       '/help': 'Commands'}
                 print('    Game Commands:')
                 [print(f'{x}: \t{y}') for x, y in cmd.items()]
                 continue

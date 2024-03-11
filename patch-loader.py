@@ -21,6 +21,7 @@ def start():
         print('unprog.')
         start()
 
+
 def newpatch():
     data = {}
     while 1:
@@ -49,7 +50,8 @@ def newpatch():
             print(f'First: {words[0]}\nLast: {words[-1]}')
             data['path'] = f'words/{name.lower()}.dict'
             break
-    langc = Choice(['English letters', 'Russian letters'], 'Choose package of letters', cmd=['cancel'])
+    langc = Choice(['English letters', 'Russian letters'],
+                   'Choose package of letters', cmd=['cancel'])
     langc.display()
     ans = langc.answer()
     if ans == 'cancel':
@@ -69,10 +71,12 @@ def newpatch():
         dictfile.write('\n'.join(words))
     print('saved')
 
+
 def delpatch():
     with open('content/patch.json') as patchfile:
         ptchs = load(patchfile)
-    patchesC = Choice([x for x in ptchs], 'Choose a patch to uninstall', cmd=['cancel'])
+    patchesC = Choice([x for x in ptchs],
+                      'Choose a patch to uninstall', cmd=['cancel'])
     patchesC.display()
     ans = patchesC.answer()
     if ans == 'cancel':
@@ -84,20 +88,20 @@ def delpatch():
             dump(ptchs, patchfile, indent=4)
     print('deleted')
 
-#  Introduction
-print('Patch-loader v1\n\tby VovLer G.')
+
+print('Patch-loader v1\n\tby VovLer G.')  # Intro
 
 dwpatch = r'''
 
- ____    __      __                             __           __         
-/\  _`\ /\ \  __/\ \                           /\ \__       /\ \        
-\ \ \/\ \ \ \/\ \ \ \           _____      __  \ \ ,_\   ___\ \ \___    
- \ \ \ \ \ \ \ \ \ \ \  _______/\ '__`\  /'__`\ \ \ \/  /'___\ \  _ `\  
-  \ \ \_\ \ \ \_/ \_\ \/\______\ \ \_\ \/\ \_\.\_\ \ \_/\ \__/\ \ \ \ \ 
+ ____    __      __                             __           __
+/\  _`\ /\ \  __/\ \                           /\ \__       /\ \
+\ \ \/\ \ \ \/\ \ \ \           _____      __  \ \ ,_\   ___\ \ \___
+ \ \ \ \ \ \ \ \ \ \ \  _______/\ '__`\  /'__`\ \ \ \/  /'___\ \  _ `\
+  \ \ \_\ \ \ \_/ \_\ \/\______\ \ \_\ \/\ \_\.\_\ \ \_/\ \__/\ \ \ \ \
    \ \____/\ `\___ ___/\/______/\ \ ,__/\ \__/.\_\\ \__\ \____\\ \_\ \_\
-    \/___/  '\/__//__/           \ \ \/  \/__/\/_/ \/__/\/____/ \/_/\/_/  
-                                  \ \_\                                 
+    \/___/  '\/__//__/           \ \ \/  \/__/\/_/ \/__/\/____/ \/_/\/_/
+                                  \ \_\
                                    \/_/
-                                    
+
 '''
 start()
