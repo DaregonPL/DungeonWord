@@ -1,18 +1,1 @@
-{
-    "8V_Members": {
-        "path": "words/8v_members.dict",
-        "range": [
-            1072,
-            1104
-        ],
-        "enabled": true
-    },
-    "Rus_Banned": {
-        "path": "words/rus_banned.dict",
-        "range": [
-            1072,
-            1104
-        ],
-        "enabled": false
-    }
-}
+{"8V_Members": {"path": "words/8v_members.dict", "range": [1072, 1104], "enabled": true}, "Rus_Banned": {"path": "words/rus_banned.dict", "range": [1072, 1104], "enabled": false}}

@@ -104,7 +104,12 @@ class AVGame():
                 print(f'\n{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
                       f'   ☢{game.seed}\n  by {self.PI["A"]}')
                 print('\t(=Vladimir Rozhok=)\nChoice commands: sys cmd')
-                print('\nRemake for classic game "Guess The Word"')
+                print('\n == PATCHES == ')
+                print('to install/uninstall patches use patch-loader')
+                print('to manage patches use "patch" command in main menu')
+                print('to reset patches use "patch .default" in main menu')
+                print('\n == DESCRIPTION ==')
+                print('Remake for classic game "Guess The Word"')
                 print('Here you need to guess the word based on the')
                 print('letters you\'ve already guessed and on word\'s lenght')
                 print(' '.join('\n Made by\n'.upper()) + self.VLlogo)
@@ -126,12 +131,27 @@ class AVGame():
                     else:
                         print('unregistered data')
             elif type(ans) is dict and ans['cmd'] == 'patch':
+                if 'default' in ans['kw']:
+                    defl = self.sd["defaultPatches"]
+                    todel = []
+                    for x in self.allpatch:
+                        if x in defl:
+                            continue
+                        if os.path.exists(self.allpatch[x]['path']):
+                            os.remove(self.allpatch[x]['path'])
+                        todel += [x]
+                    for x in defl:
+                        self.allpatch[x]['enabled'] = defl[x]
+                    [self.allpatch.pop(x) for x in todel]
+                    with open(self.FP['patch'], 'w') as pf:
+                        json.dump(self.allpatch, pf)
+                    break
                 print('-patch control')
                 binds = {}
                 patchs = [x for x in self.allpatch]
                 for x in range(len(patchs)):
                     print(f'{x}. {patchs[x]}\t' +
-                          'enabled:{self.allpatch[patchs[x]]["enabled"]}')
+                          f'enabled:{self.allpatch[patchs[x]]["enabled"]}')
                     binds[x] = patchs[x]
                 num = input('number:')
                 if not num.isdigit() and num != '*':
