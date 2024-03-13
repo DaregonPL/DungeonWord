@@ -88,7 +88,11 @@ class Choice():
             self.found = []
             values = {}
             errors = []
+            kws = []
             for a in cmdargs:
+                if a.startswith('.'):
+                    kws.append(a[1:])
+                    continue
                 now = a.split(':')
                 if not (':' in a):
                     error = f'{a}: expecting value'
@@ -103,7 +107,7 @@ class Choice():
                 elif now[0] and now[1]:
                     self.found.append(now[0])
                     values[now[0]] = now[1]
-            self.hideans = {'cmd': cmd[0], 'args': values}
+            self.hideans = {'cmd': cmd[0], 'args': values, 'kw': kws}
             [print(x) for x in errors] if errors else 0
             checkdel = self.argsHide.copy()
             [checkdel.remove(x) for x in self.found if x in checkdel]
