@@ -14,7 +14,10 @@
         "win": "content/DigitalIcon/Win.digitalicon"
     },
     "cnf": {
-        "inDev": false,
-        "defaultPatches": {"8V_Members": true, "Rus_Banned": false}
+        "inDev": true,
+        "defaultPatches": {
+            "8V_Members": true,
+            "Rus_Banned": false
+        }
     }
 }

@@ -21,13 +21,11 @@ class AVGame():
     """DungeonWord game class"""
     def __init__(self, paths, PI, startdata={}):
         print('|==> GAME INIT <==|')
-        self.USER = 'user'
+        self.USER = 'non-windows-user'
         if platform.system() == 'Windows':
             filepathl = __file__.split('\\')
             self.USER = filepathl[2]
             print('Welcome, ' + filepathl[2])
-        else:
-            raise TypeError('Windows is required')
         self.sd = startdata
         self.FP = paths
         self.inDev = self.sd['inDev'] if 'inDev' in self.sd else False
@@ -47,7 +45,6 @@ class AVGame():
             self.dicts = json.load(dictsfile)
         with open(self.FP['patch']) as patchfile:
             self.allpatch = json.load(patchfile)
-            print(self.allpatch)
             self.enpatch = [x for x, y in self.allpatch.items()
                             if y['enabled']]
             for x in self.enpatch:
@@ -59,7 +56,7 @@ class AVGame():
 
     def start(self):
         print(f'{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
-              f'\n  by {self.PI["A"]}\n')
+              f'{" (InDev version)" if self.sd["inDev"] else ""}\n  by {self.PI["A"]}\n')
         if not os.path.exists(f'content/progress/{self.USER}.user'):
             with open(f'content/progress/{self.USER}.user', 'w') as userfile:
                 json.dump({'user': self.USER, 'score': 0}, userfile)
@@ -102,7 +99,7 @@ class AVGame():
                 break
             elif ans == 'help':
                 print(f'\n{self.PI["N"]} v{self.PI["V"]}:{self.PI["B"]}' +
-                      f'   ☢{game.seed}\n  by {self.PI["A"]}')
+                      f'   ☢{self.seed}\n  by {self.PI["A"]}')
                 print('\t(=Vladimir Rozhok=)\nChoice commands: sys cmd')
                 print('\n == PATCHES == ')
                 print('to install/uninstall patches use patch-loader')
